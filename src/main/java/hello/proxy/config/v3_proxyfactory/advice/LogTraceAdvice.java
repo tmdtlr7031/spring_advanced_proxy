@@ -1,30 +1,29 @@
-package hello.proxy.config.v2_dynamicproxy.handler;
+package hello.proxy.config.v3_proxyfactory.advice;
 
 import hello.proxy.trace.TraceStatus;
 import hello.proxy.trace.logtrace.LogTrace;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-@Slf4j
 @RequiredArgsConstructor
-public class LogTraceBasicHandler implements InvocationHandler {
+public class LogTraceAdvice implements MethodInterceptor {
 
-    private final Object target;
     private final LogTrace logTrace;
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(MethodInvocation invocation) throws Throwable {
         TraceStatus status = null;
         try {
-            // 완성된 형식 : OrderController.request()
+            Method method = invocation.getMethod();
             String message = method.getDeclaringClass().getSimpleName() + "." + method.getName() + "()";
             status = logTrace.begin(message);
 
             // 로직 호출
-            Object result = method.invoke(target, args);
+            Object result = invocation.proceed();
+
             logTrace.end(status);
             return result;
         }catch (Exception e) {

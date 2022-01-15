@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class InterfaceProxyConfig {
 
     @Bean
-    public OrderControllerV1 orderController(LogTrace logTrace) { // LogTrace는 DI됨
+    public OrderControllerV2 orderController(LogTrace logTrace) { // LogTrace는 DI됨
         OrderControllerV1Impl controllerImpl = new OrderControllerV1Impl(orderService(logTrace));
         return new OrderControllerInterfaceProxy(controllerImpl, logTrace);
     }
